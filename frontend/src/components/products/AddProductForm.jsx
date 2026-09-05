@@ -38,7 +38,7 @@ const AddProductForm = () => {
   setIsSaving(true)
   
   try {
-    await axios.post("https://6a2258865c61035328699e51.mockapi.io/Products", product)
+    await axios.post(`${import.meta.env.VITE_API_URL}/Products`, product)
 
     toast.success("Products added successfully!")
     navigate("/ProductsList")

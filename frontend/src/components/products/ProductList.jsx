@@ -52,7 +52,7 @@ const ProductList = () => {
   const getProducts = useCallback(async () => {
     try {
       const response = await axios.get(
-        "https://6a2258865c61035328699e51.mockapi.io/Products"
+        `${import.meta.env.VITE_API_URL}/Products`
       )
 
       setProducts(response.data)
@@ -69,7 +69,7 @@ const ProductList = () => {
   const deleteProduct = async (id) => {
     try {
       await axios.delete(
-        `https://6a2258865c61035328699e51.mockapi.io/Products/${id}`
+        `${import.meta.env.VITE_API_URL}/Products/${id}`
       )
 
       toast.success("Product deleted successfully!")
@@ -103,7 +103,7 @@ const ProductList = () => {
       setIsSaving(true)
 
       await axios.put(
-        `https://6a2258865c61035328699e51.mockapi.io/Products/${editingProduct.id}`,
+        `${import.meta.env.VITE_API_URL}/Products/${editingProduct.id}`,
         updatedProduct
       )
 

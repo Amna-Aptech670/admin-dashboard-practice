@@ -20,7 +20,7 @@ const ProductsDetails = () => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://6a2258865c61035328699e51.mockapi.io/Products/${id}`
+        `${import.meta.env.VITE_API_URL}/Products/${id}`
       );
 
       setProducts(response.data);

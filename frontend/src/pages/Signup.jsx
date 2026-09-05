@@ -12,7 +12,7 @@ const Signup = () => {
   const emptyForm = {fullName: "", email: "", password: "", confirmPassword: ""}
   const [userInfo, setUserInfo] = useState(emptyForm)
   const [isLoading, setIsLoading] = useState(false)
-  const apiUrl = 'https://6a2258865c61035328699e51.mockapi.io/Users'
+  const apiUrl = `${import.meta.env.VITE_API_URL}/Users`
 
   function handleInputChange(e) {
     const { name, value } = e.target

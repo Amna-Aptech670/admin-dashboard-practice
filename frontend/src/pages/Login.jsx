@@ -14,8 +14,8 @@ const Login = () => {
   const [loginError, setLoginError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   
-  const apiUrl = 'https://6a2258865c61035328699e51.mockapi.io/Users'
-
+  const apiUrl = `${import.meta.env.VITE_API_URL}/Users`
+  
   function handleInputChange(event) {
     const { name, value } = event.target
     setUserInfo({ ...userInfo, [name]: value })
