@@ -4,13 +4,17 @@ import App from './App.jsx'
 import { TooltipProvider } from './components/ui/tooltip'
 import { ThemeProvider } from './components/context/ThemeContext'
 import { BrowserRouter } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { store } from './redux/store'
 
 createRoot(document.getElementById('root')).render(
-    <ThemeProvider>
-      <BrowserRouter>
-      <TooltipProvider>
-        <App />
-      </TooltipProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider>
+        <BrowserRouter>
+        <TooltipProvider>
+          <App />
+        </TooltipProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </Provider>
 )

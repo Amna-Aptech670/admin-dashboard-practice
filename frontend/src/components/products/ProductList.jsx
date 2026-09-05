@@ -52,7 +52,7 @@ const ProductList = () => {
   const getProducts = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/Products`
+        `${import.meta.env.VITE_MOCKAPI_URL}/Products`
       )
 
       setProducts(response.data)
@@ -69,7 +69,7 @@ const ProductList = () => {
   const deleteProduct = async (id) => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/Products/${id}`
+        `${import.meta.env.VITE_MOCKAPI_URL}/Products/${id}`
       )
 
       toast.success("Product deleted successfully!")
@@ -103,7 +103,7 @@ const ProductList = () => {
       setIsSaving(true)
 
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/Products/${editingProduct.id}`,
+        `${import.meta.env.VITE_MOCKAPI_URL}/Products/${editingProduct.id}`,
         updatedProduct
       )
 

@@ -20,7 +20,7 @@ const ProductsDetails = () => {
       setLoading(true);
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/Products/${id}`
+        `${import.meta.env.VITE_MOCKAPI_URL}/Products/${id}`
       );
 
       setProducts(response.data);

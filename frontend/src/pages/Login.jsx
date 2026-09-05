@@ -5,52 +5,30 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom'
 import { toast } from "sonner"
-import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser } from '../redux/slices/authSlice'
 
 const Login = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { loading, error } = useSelector((state) => state.auth)
   const emptyForm = { email: "", password: "" }
   const [userInfo, setUserInfo] = useState(emptyForm)
-  const [loginError, setLoginError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  
-  const apiUrl = `${import.meta.env.VITE_API_URL}/Users`
-  
+
   function handleInputChange(event) {
     const { name, value } = event.target
     setUserInfo({ ...userInfo, [name]: value })
-    setLoginError("")
   }
 
   async function handleLogin(event) {
     event.preventDefault()
-    setIsLoading(true)
-    setLoginError("")
+    const result = await dispatch(loginUser(userInfo))
 
-    try {
-      const response = await axios.get(apiUrl)
-      const allUsers = response.data
-      const matchedUser = allUsers.find(
-        user => user.email === userInfo.email.trim().toLowerCase() && user.password === userInfo.password
-      )
-      
-      if (matchedUser) {
-        toast.success("Login successful! Welcome back.")
-        console.log("Login successful!", matchedUser)
-   
-        const { password, ...safeUser } = matchedUser
-        localStorage.setItem('currentUser', JSON.stringify(safeUser))
-        
-        navigate('/')
-      } else {
-        setLoginError("Wrong email or password. Please sign up first.")
-      }
-    } catch (error) {
-      console.error('Login error:', error)
-      setLoginError("Something went wrong. Please try again.")
-      toast.error("Login failed. Please try again.")
-    } finally {
-      setIsLoading(false)
+    if (loginUser.fulfilled.match(result)) {
+      toast.success("Login successful! Welcome back.")
+      navigate('/')
+    } else {
+      toast.error(result.payload?.msg || "Login failed. Please try again.")
     }
   }
 
@@ -74,7 +52,7 @@ const Login = () => {
                   onChange={handleInputChange} 
                   placeholder="admin@example.com" 
                   required
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
@@ -88,18 +66,18 @@ const Login = () => {
                   onChange={handleInputChange} 
                   placeholder="Enter password" 
                   required
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
-              {loginError && (
+              {error && (
                 <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-                  {loginError}
+                  {error.msg || error.error || "Something went wrong"}
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
               </Button>
             </form>
 
@@ -109,7 +87,7 @@ const Login = () => {
                 type="button"
                 onClick={() => navigate('/signup')}
                 className="font-semibold text-blue-600 underline hover:text-blue-800"
-                disabled={isLoading}
+                disabled={loading}
               >
                 Sign up
               </button>

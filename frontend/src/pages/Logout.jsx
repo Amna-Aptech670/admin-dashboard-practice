@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { 
   AlertDialog,
@@ -13,21 +14,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { logout } from '../redux/slices/authSlice'
 
 const Logout = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   function handleLogout() {
     setIsLoggingOut(true)
-    
-    // Clear user session from localStorage
-    localStorage.removeItem('currentUser')
-    
-    // Show success message
+    dispatch(logout())
     toast.success("Logged out successfully!")
-    
-    // Redirect to login page
     navigate('/login')
   }
 

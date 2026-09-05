@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom'
 import { toast } from "sonner"
-import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { registerUser } from '../redux/slices/authSlice'
 
 const Signup = () => {
   const navigate = useNavigate()
-  const emptyForm = {fullName: "", email: "", password: "", confirmPassword: ""}
+  const dispatch = useDispatch()
+  const { loading, error } = useSelector((state) => state.auth)
+  const emptyForm = { fullName: "", email: "", password: "", confirmPassword: "" }
   const [userInfo, setUserInfo] = useState(emptyForm)
-  const [isLoading, setIsLoading] = useState(false)
-  const apiUrl = `${import.meta.env.VITE_API_URL}/Users`
 
   function handleInputChange(e) {
     const { name, value } = e.target
@@ -21,46 +22,28 @@ const Signup = () => {
 
   async function handleSignup(e) {
     e.preventDefault()
-    
+
     if (userInfo.password !== userInfo.confirmPassword) {
       toast.error("Passwords do not match!")
       return
     }
-    
-    setIsLoading(true)
 
-    try {
-      const response = await axios.get(apiUrl)
-      const allUsers = response.data
-      if (allUsers.find(user => user.email === userInfo.email)) {
-        toast.error("User with this email already exists. Please login.")
-        setIsLoading(false)
-        return
-      }
-   
-      const newUser = {
-        fullName: userInfo.fullName,
-        email: userInfo.email.trim().toLowerCase(),
-        password: userInfo.password
-      }
-      
-      const postResponse = await axios.post(apiUrl, newUser)
-      const savedUser = postResponse.data
-      
+    const newUser = {
+      name: userInfo.fullName,
+      email: userInfo.email.trim().toLowerCase(),
+      password: userInfo.password
+    }
+
+    const result = await dispatch(registerUser(newUser))
+
+    if (registerUser.fulfilled.match(result)) {
       toast.success("Signup successful! Please login to continue.")
-      console.log("Signup successful!", savedUser)
-    
       setUserInfo(emptyForm)
-      
       setTimeout(() => {
         navigate('/login')
       }, 1500)
-
-    } catch (error) {
-      console.error('Signup error:', error)
-      toast.error("Something went wrong. Please try again.")
-    } finally {
-      setIsLoading(false)
+    } else {
+      toast.error(result.payload?.msg || "Something went wrong. Please try again.")
     }
   }
 
@@ -86,7 +69,7 @@ const Signup = () => {
                   required
                   minLength="3"
                   title="Full name must be at least 3 characters"
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
@@ -101,7 +84,7 @@ const Signup = () => {
                   placeholder="email@example.com"
                   required
                   title="Please enter a valid email address"
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
@@ -117,7 +100,7 @@ const Signup = () => {
                   required
                   minLength="6"
                   title="Password must be at least 6 characters"
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
@@ -131,12 +114,18 @@ const Signup = () => {
                   onChange={handleInputChange} 
                   placeholder="Confirm your password"
                   required
-                  disabled={isLoading}
+                  disabled={loading}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating Account...' : 'Sign Up'}
+              {error && (
+                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                  {error.msg || error.error || "Something went wrong"}
+                </div>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Sign Up'}
               </Button>
             </form>
 
@@ -146,7 +135,7 @@ const Signup = () => {
                 type="button"
                 onClick={() => navigate('/login')}
                 className="font-semibold text-blue-600 underline hover:text-blue-800"
-                disabled={isLoading}
+                disabled={loading}
               >
                 Login
               </button>
