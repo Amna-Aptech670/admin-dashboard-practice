@@ -49,7 +49,7 @@ const Signup = () => {
 
   return (
     <>
-      <div className="mx-auto flex min-h-[60vh] max-w-md items-center">
+      <div className="mx-auto flex min-h-screen max-w-md items-center justify-center px-4">
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-2xl font-bold text-transparent">Sign Up</CardTitle>

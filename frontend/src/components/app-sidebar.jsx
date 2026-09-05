@@ -1,9 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,} from "@/components/ui/sidebar"
-import { LayoutDashboard, List, PlusCircle, Command, CircleUser, LogIn, UserKey, LogOut, ShoppingCart } from "lucide-react"
+import { LayoutDashboard, List, PlusCircle, Command, CircleUser, LogIn, UserKey, LogOut, ShoppingCart, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,} from "@/components/ui/alert-dialog"
+import { logout } from "@/redux/slices/authSlice"
 
 const navItems = [
   {
@@ -22,6 +24,11 @@ const navItems = [
     icon: <PlusCircle className="size-4" />,
   },
   {
+    title: "Profile",
+    path: "/profile",
+    icon: <User className="size-4" />,
+  },
+  {
     title: "Support",
     path: "/contact",
     icon: <CircleUser className="size-4" />,
@@ -31,19 +38,20 @@ const navItems = [
 const AppSidebar = ({ ...props }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.auth)
 
   function handleLogout() {
-    localStorage.removeItem('currentUser')
+    dispatch(logout())
     toast.success("Logged out successfully!")
     navigate('/login')
   }
 
   const filteredNavItems = navItems.filter(item => {
-    if (currentUser) {
+    if (user) {
       return item.path !== '/login' && item.path !== '/signup'
     }
-    return true
+    return item.path !== '/profile' && item.path !== '/add-product' && item.path !== '/products'
   })
 
   return (
@@ -95,7 +103,7 @@ const AppSidebar = ({ ...props }) => {
       
       <SidebarFooter className="border-t border-sidebar-border/50 p-4">
          
-        {currentUser && (
+        {user && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button 
@@ -126,7 +134,7 @@ const AppSidebar = ({ ...props }) => {
           </AlertDialog>
         )}
         
-        {!currentUser && (
+        {!user && (
           <div className="space-y-2">
             <Button 
               variant="outline" 

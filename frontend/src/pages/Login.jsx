@@ -34,7 +34,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="mx-auto flex min-h-[60vh] max-w-md items-center">
+      <div className="mx-auto flex min-h-screen max-w-md items-center justify-center px-4">
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-2xl font-bold text-transparent">Login Form</CardTitle>
@@ -68,6 +68,15 @@ const Login = () => {
                   required
                   disabled={loading}
                 />
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/forgot-password')}
+                    className="text-xs font-medium text-blue-600 underline hover:text-blue-800"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
               </div>
 
               {error && (
