@@ -25,15 +25,28 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+export const fetchAllUsers = createAsyncThunk(
+    "auth/users",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await api.get("/auth/users");
+            return data.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const storedUser = localStorage.getItem('currentUser')
 
 const authSlice = createSlice({
     name: "auth",
     initialState: {
-        user: storedUser ? JSON.parse(storedUser) : null,
-        error: null,
-        loading: false
-    },
+    user: storedUser ? JSON.parse(storedUser) : null,
+    users: [],
+    error: null,
+    loading: false
+},
     reducers: {
         logout: (state) => {
             state.user = null;
@@ -44,6 +57,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+        //login
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -58,6 +72,8 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+            //register
             .addCase(registerUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -71,7 +87,12 @@ const authSlice = createSlice({
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+
+            //get Users
+            .addCase(fetchAllUsers.fulfilled, (state, action) => {
+                state.users = action.payload.users;
+});
     }
 });
 
