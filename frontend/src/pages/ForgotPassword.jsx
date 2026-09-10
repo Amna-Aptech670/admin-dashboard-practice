@@ -1,24 +1,28 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom'
+import { resetForgotPassword, setEmail, verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+
 
 const ForgotPassword = () => {
   const navigate = useNavigate()
-  const [email, setEmail] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
+  const { email, loading, error, otpSent } = useSelector((state) => state.forgotPassword)
+
+  useEffect(() => {
+    if (otpSent) {
+      navigate('/verify-otp', { state: { email } })
+      dispatch(resetForgotPassword())
+    }
+  }, [otpSent, email, navigate, dispatch])
 
   function handleSubmit(e) {
     e.preventDefault()
-    setIsLoading(true)
-
-    // TODO: backend call yahan aayegi (nodemailer se OTP bhejna)
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate('/verify-otp', { state: { email } })
-    }, 1000)
+    dispatch(verifyOtp(email))
   }
 
   return (
@@ -37,15 +41,19 @@ const ForgotPassword = () => {
                 id="email"
                 name="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => dispatch(setEmail(e.target.value))}
                 placeholder="admin@example.com"
                 required
-                disabled={isLoading}
+                disabled={loading}
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Send OTP'}
+            {error && (
+              <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Sending...' : 'Send OTP'}
             </Button>
           </form>
 
@@ -55,7 +63,7 @@ const ForgotPassword = () => {
               type="button"
               onClick={() => navigate('/login')}
               className="font-semibold text-blue-600 underline hover:text-blue-800"
-              disabled={isLoading}
+              disabled={loading}
             >
               Login
             </button>

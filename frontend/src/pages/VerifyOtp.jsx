@@ -1,14 +1,21 @@
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate, useLocation } from 'react-router-dom'
+import { verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
 
 const VerifyOtp = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const email = location.state?.email || ""
+  const dispatch = useDispatch()
+
+  const reduxEmail = useSelector((state) => state.forgotPassword.email)
+  const { loading, error } = useSelector((state) => state.forgotPassword)
+  const email = reduxEmail || location.state?.email || ""
+
   const [otp, setOtp] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -16,11 +23,19 @@ const VerifyOtp = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: backend call yahan aayegi (OTP verify karne ke liye)
+    // TODO: backend call yahan aayegi (OTP verify karne ke liye — check-otp controller/route abhi nahi bana)
     setTimeout(() => {
       setIsLoading(false)
       navigate('/reset-password', { state: { email, otp } })
     }, 1000)
+  }
+
+  function handleResend() {
+    if (email) {
+      dispatch(verifyOtp(email))
+    } else {
+      navigate('/forgot-password')
+    }
   }
 
   return (
@@ -49,6 +64,10 @@ const VerifyOtp = () => {
               />
             </div>
 
+            {error && (
+              <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>
+            )}
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Verifying...' : 'Verify OTP'}
             </Button>
@@ -58,11 +77,11 @@ const VerifyOtp = () => {
             Didn't receive a code?{' '}
             <button
               type="button"
-              onClick={() => navigate('/forgot-password')}
+              onClick={handleResend}
               className="font-semibold text-blue-600 underline hover:text-blue-800"
-              disabled={isLoading}
+              disabled={isLoading || loading}
             >
-              Resend
+              {loading ? 'Resending...' : 'Resend'}
             </button>
           </div>
         </CardContent>
