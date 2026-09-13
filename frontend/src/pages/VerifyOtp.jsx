@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate, useLocation } from 'react-router-dom'
-import { verifyEmail } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+import { verifyEmail, verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+
 
 const VerifyOtp = () => {
   const navigate = useNavigate()
@@ -13,21 +14,20 @@ const VerifyOtp = () => {
   const dispatch = useDispatch()
 
   const reduxEmail = useSelector((state) => state.forgotPassword.email)
-  const { loading, error } = useSelector((state) => state.forgotPassword)
+  const { loading, error, otpVerified } = useSelector((state) => state.forgotPassword)
   const email = reduxEmail || location.state?.email || ""
 
   const [otp, setOtp] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (otpVerified) {
+      navigate('/reset-password', { state: { email } })
+    }
+  }, [otpVerified, email, navigate])
 
   function handleSubmit(e) {
     e.preventDefault()
-    setIsLoading(true)
-
-    // TODO: backend call yahan aayegi (OTP verify karne ke liye — check-otp controller/route abhi nahi bana)
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate('/reset-password', { state: { email, otp } })
-    }, 1000)
+    dispatch(verifyOtp({ email, otp }))
   }
 
   function handleResend() {
@@ -57,19 +57,17 @@ const VerifyOtp = () => {
                 name="otp"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
-                maxLength={6}
+                placeholder="Enter 4-digit code"
+                maxLength={4}
                 required
-                disabled={isLoading}
+                disabled={loading}
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>
-            )}
+            {error && <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Verifying...' : 'Verify OTP'}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Verifying...' : 'Verify OTP'}
             </Button>
           </form>
 
@@ -79,9 +77,9 @@ const VerifyOtp = () => {
               type="button"
               onClick={handleResend}
               className="font-semibold text-blue-600 underline hover:text-blue-800"
-              disabled={isLoading || loading}
+              disabled={loading}
             >
-              {loading ? 'Resending...' : 'Resend'}
+              Resend
             </button>
           </div>
         </CardContent>

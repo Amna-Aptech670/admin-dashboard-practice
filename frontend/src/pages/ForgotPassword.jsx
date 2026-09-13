@@ -1,28 +1,30 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'sonner'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom'
-import { resetForgotPassword, setEmail, verifyEmail } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+import { setEmail, verifyEmail } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
 
 
 const ForgotPassword = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { email, loading, error, otpSent } = useSelector((state) => state.forgotPassword)
-
-  useEffect(() => {
-    if (otpSent) {
-      navigate('/verify-email', { state: { email } })
-      dispatch(resetForgotPassword())
-    }
-  }, [otpSent, email, navigate, dispatch])
+  const { email, loading } = useSelector((state) => state.forgotPassword)
 
   function handleSubmit(e) {
     e.preventDefault()
     dispatch(verifyEmail(email))
+      .unwrap()
+      .then((result) => {
+        toast.success(result.msg || "OTP sent successfully")
+        navigate('/verify-otp', { state: { email } })
+      })
+      .catch((err) => {
+        toast.error(err?.error || "Something went wrong")
+      })
   }
 
   return (
@@ -47,10 +49,6 @@ const ForgotPassword = () => {
                 disabled={loading}
               />
             </div>
-
-            {error && (
-              <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>
-            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Sending...' : 'Send OTP'}
