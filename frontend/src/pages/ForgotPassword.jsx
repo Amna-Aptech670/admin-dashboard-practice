@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom'
-import { resetForgotPassword, setEmail, verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+import { resetForgotPassword, setEmail, verifyEmail } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
 
 
 const ForgotPassword = () => {
@@ -15,14 +15,14 @@ const ForgotPassword = () => {
 
   useEffect(() => {
     if (otpSent) {
-      navigate('/verify-otp', { state: { email } })
+      navigate('/verify-email', { state: { email } })
       dispatch(resetForgotPassword())
     }
   }, [otpSent, email, navigate, dispatch])
 
   function handleSubmit(e) {
     e.preventDefault()
-    dispatch(verifyOtp(email))
+    dispatch(verifyEmail(email))
   }
 
   return (

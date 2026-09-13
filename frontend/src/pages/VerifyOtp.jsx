@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate, useLocation } from 'react-router-dom'
-import { verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
+import { verifyEmail } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
 
 const VerifyOtp = () => {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ const VerifyOtp = () => {
 
   function handleResend() {
     if (email) {
-      dispatch(verifyOtp(email))
+      dispatch(verifyEmail(email))
     } else {
       navigate('/forgot-password')
     }

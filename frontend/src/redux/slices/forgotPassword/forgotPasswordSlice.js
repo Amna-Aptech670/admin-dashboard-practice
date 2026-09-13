@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "@/api/api";
 
-export const verifyOtp = createAsyncThunk(
-    "auth/verifyOtp",
+export const verifyEmail = createAsyncThunk(
+    "auth/verifyEmail",
     async (email, { rejectWithValue }) => {
         try {
-            const data = await api.post("/auth/verify-otp", { email });
+            const data = await api.post("/auth/verify-email", { email });
             return data.data;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -35,18 +35,18 @@ const forgotPasswordSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            //verify otp 
-            .addCase(verifyOtp.pending, (state) => {
+            //verify email
+            .addCase(verifyEmail.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(verifyOtp.fulfilled, (state, action) => {
+            .addCase(verifyEmail.fulfilled, (state, action) => {
                 state.loading = false;
                 state.otpSent = true;
                 state.error = null;
                 state.message = action.payload.msg;
             })
-            .addCase(verifyOtp.rejected, (state, action) => {
+            .addCase(verifyEmail.rejected, (state, action) => {
                 state.loading = false;
                 state.otpSent = false;
                 state.error = action.payload;
