@@ -16,4 +16,6 @@ const forgotPasswordModel = new mongoose.Schema({
 }
 },{timestamps:true});
 
+forgotPasswordModel.index({updatedAt:1},{expireAfterSeconds:600})
+
 export default mongoose.model('Forget', forgotPasswordModel)

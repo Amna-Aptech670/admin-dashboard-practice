@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label"
 import { useNavigate, useLocation } from 'react-router-dom'
 import { verifyEmail, verifyOtp } from '@/redux/slices/forgotPassword/forgotPasswordSlice'
 
-
 const VerifyOtp = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -39,18 +38,49 @@ const VerifyOtp = () => {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md items-center justify-center px-4">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-2xl font-bold text-transparent">Verify OTP</CardTitle>
-          <CardDescription>
-            {email ? `Enter the code sent to ${email}` : "Enter the verification code sent to your email."}
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-muted/40 px-4 py-10">
+
+      {/* Background decoration */}
+      <div className="absolute -left-32 -top-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-32 -right-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+
+      <Card className="relative w-full max-w-md overflow-hidden border-border/60 bg-background/95 shadow-xl backdrop-blur">
+
+        {/* Top accent */}
+        <div className="h-1.5 w-full bg-primary" />
+
+        <CardHeader className="px-7 pb-5 pt-8 text-center">
+
+          {/* OTP icon */}
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-3xl shadow-sm">
+            ✉️
+          </div>
+
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Verify your email
+          </CardTitle>
+
+          <CardDescription className="mx-auto mt-2 max-w-sm text-sm leading-6">
+            {email
+              ? `Enter the verification code sent to ${email}`
+              : "Enter the verification code sent to your email."}
           </CardDescription>
+
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+
+        <CardContent className="px-7 pb-8">
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* OTP */}
             <div className="space-y-2">
-              <Label htmlFor="otp">OTP Code</Label>
+              <Label
+                htmlFor="otp"
+                className="text-sm font-medium"
+              >
+                Verification Code
+              </Label>
+
               <Input
                 type="text"
                 id="otp"
@@ -61,27 +91,42 @@ const VerifyOtp = () => {
                 maxLength={4}
                 required
                 disabled={loading}
+                className="h-12 rounded-lg bg-muted/30 px-4 text-center text-lg font-semibold tracking-[0.5em] transition-colors focus-visible:bg-background"
               />
             </div>
 
-            {error && <p className="text-sm text-red-600">{error?.error || "Something went wrong"}</p>}
+            {/* Error */}
+            {error && (
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3">
+                <p className="text-center text-sm text-destructive">
+                  {error?.error || "Something went wrong"}
+                </p>
+              </div>
+            )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            {/* Verify button */}
+            <Button
+              type="submit"
+              className="h-11 w-full rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md"
+              disabled={loading}
+            >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </Button>
+
           </form>
 
-          <div className="mt-4 text-center text-sm text-gray-600">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Didn't receive a code?{' '}
             <button
               type="button"
               onClick={handleResend}
-              className="font-semibold text-blue-600 underline hover:text-blue-800"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
               disabled={loading}
             >
               Resend
             </button>
           </div>
+
         </CardContent>
       </Card>
     </div>
