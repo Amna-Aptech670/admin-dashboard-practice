@@ -23,7 +23,7 @@ const verifyEmail = async(req, res)=>{
         } else{
             const newotp = await Forget.create({email,otp})
         }
-        sendEmail(email,"Password Reset",`<!DOCTYPE html>
+       await sendEmail(email,"Password Reset",`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
